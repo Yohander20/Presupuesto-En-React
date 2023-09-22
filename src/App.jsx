@@ -6,6 +6,12 @@ function App() {
 
 const [presupuesto,setPresupuesto]=useState(0);  
 const [isValidPresupuesto,setIsValidPresupuesto]=useState(false)
+
+const [modal,setModal]=useState(false)
+
+const handleNuevoGasto=()=>{
+ setModal(true)
+}
   return (
     <>
       <div>
@@ -23,7 +29,7 @@ const [isValidPresupuesto,setIsValidPresupuesto]=useState(false)
           />
         </div>
         )}
-        
+        {modal && <p>Desde Modal</p>}
       </div>
     </>
   )
