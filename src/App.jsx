@@ -1,10 +1,12 @@
 import { useState,useEffect} from 'react'
 import Header from './components/Header'
+import Filtros from './components/Filtros'
 import ListadoGastos from './components/ListadoGastos';
 import IconoNuevoGasto from './img/nuevo-gasto.svg'
 import {generarId} from './helpers'
 import Modal from './components/Modal';
 import { object } from 'prop-types';
+
 
 
 function App() {
@@ -17,13 +19,30 @@ const [isValidPresupuesto,setIsValidPresupuesto]=useState(false)
 const [modal,setModal]=useState(false)
 const [animarModal,setAnimarModal]=useState(false)
 
-const[gastos,setGastos]=useState([])
+const[gastos,setGastos]=useState(
+  localStorage.getItem('gastos')?JSON.parse(localStorage.getItem('gastos')) : []
+  )
 const[gastoEditar,setGastoEditar]=useState({})
+
+const [filtro,setFiltro]=useState('')
+const [gastosFiltrados,setGastosFiltrados]=useState([])
 
 useEffect(()=>{
   console.log(presupuesto)
   Number(localStorage.setItem('presupuesto',presupuesto)) ?? 0
 }),[presupuesto]
+
+useEffect(()=>{
+localStorage.setItem('gastos',JSON.stringify(gastos)??[])
+},[gastos])
+
+useEffect(()=>{
+  if(filtro){
+   const gastosFiltrados=gastos.filter(gasto=>gasto.categoria===filtro);
+   setGastosFiltrados(gastosFiltrados)
+  }
+},[filtro])
+
 
 useEffect(()=>{
   const presupuestoLS=Number(localStorage.getItem('presupuesto')) ?? 0
@@ -32,6 +51,7 @@ useEffect(()=>{
   }
   
 },[])
+
 
 useEffect(()=>{
   if(Object.keys(gastoEditar).length>0){
@@ -82,6 +102,7 @@ setGastos(gastosActualizados);
     <>
       <div className={modal ? 'fijar':''}>
         <Header
+        setGastos={setGastos}
         gastos={gastos}
         presupuesto={presupuesto}
         setPresupuesto={setPresupuesto}
@@ -90,10 +111,16 @@ setGastos(gastosActualizados);
         {isValidPresupuesto && (
           <>
           <main>
+            <Filtros
+            filtro={filtro}
+            setFiltro={setFiltro}
+            />
             <ListadoGastos
             gastos={gastos}
             setGastoEditar={setGastoEditar}
             eliminarGasto={eliminarGasto}
+            filtro={filtro}
+            gastosFiltrados={gastosFiltrados}
             />
           </main>
           <div className='nuevo-gasto'>
